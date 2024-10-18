@@ -60,7 +60,7 @@ def main():
     # otherwise we break on for loop, then restart due to while loop
     message = ""
     while True:
-        if message == "bye":
+        if message.lower() == "bye":
             break
         try:
             input_ready, output_ready, err = select.select([sys.stdin, client_socket], [client_socket], [])

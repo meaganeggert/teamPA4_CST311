@@ -88,7 +88,7 @@ def myNetwork():
     info( '*** Post configure switches and hosts\n')
     # *** chat_server.py file needs to be renamed ***
     # start xterm and run chat_server.py file
-    makeTerm(h4, title='Node', term='xterm', display=None, cmd='python3 chat_server.py; bash')
+    makeTerm(h4, title='Node', term='xterm', display=None, cmd='python3 tpa4_chat_server.py; bash')
     CLI(net)
     net.stop()
     net.stopXterms()    # close xterm on exit
