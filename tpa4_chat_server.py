@@ -15,6 +15,7 @@ import time
 import threading
 import select
 import sys
+import ssl
 
 # Configure logging
 import logging
@@ -22,7 +23,21 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+# to be changed when moved to /etc/ssl/demoCA/private
+# and /etc/ssl/demoCA/newcerts
+ssl_key_file = "/home/mininet/tpa4.chat.test-key.pem"
+ssl_cert_file = "/home/mininet/tpa4.chat.test-cert.pem"
+client_cert_file = "/etc/ssl/demoCA/cacert.pem"
+# password = "CST311"
+
+server_name = '10.0.2.2'
 server_port = 12000
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+context.load_cert_chain(ssl_cert_file, ssl_key_file)
+# context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+# context.verify_mode = ssl.CERT_REQUIRED
+# context.load_cert_chain(certfile=ssl_cert_file, keyfile=ssl_key_file)
+# context.load_verify_locations(cafile=client_cert_file)
 
 client_used = {}
 connected_clients = {}
@@ -174,10 +189,13 @@ def main():
   server_socket = s.socket(s.AF_INET,s.SOCK_STREAM)
   
   # Assign port number to socket, and bind to chosen port
-  server_socket.bind(('',server_port))
+  server_socket.bind((server_name,server_port))
   
   # Configure how many requests can be queued on the server at once
   server_socket.listen(3)
+
+  # wrap socket with tls context
+  s_sock = context.wrap_socket(server_socket, server_side=True)
   
   # Alert user we are now online
   log.info("The server is ready to receive on port " + str(server_port))
@@ -192,7 +210,7 @@ def main():
     # Enter forever loop to listen for requests
     while True:
       # When a client connects, create a new socket and record their address
-      connection_socket, address = server_socket.accept()
+      connection_socket, address = s_sock.accept()
 
       # Meg - Keep track of connected_clients with username:
       # Brandon - updates based on client_used dictionary
@@ -223,6 +241,7 @@ def main():
       log.info("Connected to client at " + str(address))
 
   finally:
+    s_sock.close()
     server_socket.close()
 
 

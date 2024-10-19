@@ -14,6 +14,7 @@ import socket as s
 
 import sys
 import select
+import ssl
 
 # Configure logging
 import logging
@@ -22,8 +23,11 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # Set global variables
-server_name = '10.0.2.2'
+client_cert_file = "/etc/ssl/demoCA/cacert.pem"
+server_name = 'tpa4.chat.test'
 server_port = 12000
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.load_verify_locations(client_cert_file)
 
 inputs = []
 outputs = []
@@ -31,15 +35,16 @@ outputs = []
 def main():
     # Create socket
     client_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
+    s_sock = context.wrap_socket(sock=client_socket, server_hostname=server_name)
     
 
     try:
         # Establish TCP connection
-        client_socket.connect((server_name,server_port))
+        s_sock.connect((server_name,server_port))
         
         # Meg - Add server_socket to both the list of potential inputs and potential outputs
-        inputs.append(client_socket)
-        outputs.append(client_socket)
+        inputs.append(s_sock)
+        outputs.append(s_sock)
     except Exception as e:
         log.exception(e)
         log.error("***Advice:***")
@@ -52,7 +57,7 @@ def main():
         exit(8)
 
     # Meg - Receive Client welcome message from server
-    data = client_socket.recv(1024)
+    data = s_sock.recv(1024)
     welcome_message = data.decode()
     print(welcome_message)
 
@@ -63,18 +68,18 @@ def main():
         if message.lower() == "bye":
             break
         try:
-            input_ready, output_ready, err = select.select([sys.stdin, client_socket], [client_socket], [])
+            input_ready, output_ready, err = select.select([sys.stdin, s_sock], [s_sock], [])
     
             for i in input_ready:
-                if i == client_socket:
-                    data = client_socket.recv(1024)
+                if i == s_sock:
+                    data = s_sock.recv(1024)
                     message = data.decode()
                     print(message)
 
                 elif i == sys.stdin:
                     message = input()
                     try:
-                        client_socket.send(message.encode())
+                        s_sock.send(message.encode())
                     except:
                         print("Error sending message")
                     if message.lower() == "bye":
@@ -83,6 +88,7 @@ def main():
             print("Error:", e)
 
     # Close socket
+    s_sock.close()
     client_socket.close()
 
 # This helps shield code from running when we import the module
