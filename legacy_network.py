@@ -10,6 +10,9 @@ from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
 from mininet.term import makeTerm   # import makeTerm to allow xterm to run the chat server file using h4 on networks startup
 from subprocess import call
+import subprocess
+
+subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
 
 def myNetwork():
 
