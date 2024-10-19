@@ -2,7 +2,22 @@
 import subprocess
 
 def addIPs():
-    pass
+    common_name_file = open('common_name.txt', 'r')
+    common_name = common_name_file.read().strip()
+    common_name_file.close()
+    
+    hosts_file = open('/etc/hosts', 'r')
+    host_list = hosts_file.read()
+    hosts_file.close()
+
+    server_IP_to_common_name = "10.0.2.2\t" + common_name
+
+    if host_list.find(server_IP_to_common_name) == -1:
+        command = "sudo echo " + server_IP_to_common_name + " >> /etc/hosts"
+        subprocess.run(command, shell=True)
+    else:
+        print("IP to common name already in /etc/hosts")
+    # pass
 
 def generateKey(chat_name, challenge_password):
     subprocess.run("sudo openssl genrsa -out " + chat_name + "-key.pem 2048\n", shell=True)
@@ -29,7 +44,7 @@ if __name__ == '__main__':
     challenge_password = input("Enter a challenge password for the server private key: ")
 
     # Add IP addresses to /etc/hosts
-    # addIPs()
+    addIPs()
 
     # # Generate private key
     print("generating key")

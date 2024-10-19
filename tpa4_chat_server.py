@@ -23,10 +23,14 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+common_name_file = open('common_name.txt', 'r')
+common_name = common_name_file.read().strip()
+common_name_file.close()
+
 # to be changed when moved to /etc/ssl/demoCA/private
 # and /etc/ssl/demoCA/newcerts
-ssl_key_file = "/home/mininet/tpa4.chat.test-key.pem"
-ssl_cert_file = "/home/mininet/tpa4.chat.test-cert.pem"
+ssl_key_file = "/home/mininet/" + common_name + "-key.pem"
+ssl_cert_file = "/home/mininet/" + common_name + "-cert.pem"
 client_cert_file = "/etc/ssl/demoCA/cacert.pem"
 # password = "CST311"
 

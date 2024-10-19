@@ -22,9 +22,13 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+common_name_file = open('common_name.txt', 'r')
+common_name = common_name_file.read().strip()
+common_name_file.close()
+
 # Set global variables
 client_cert_file = "/etc/ssl/demoCA/cacert.pem"
-server_name = 'tpa4.chat.test'
+server_name = common_name
 server_port = 12000
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 context.load_verify_locations(client_cert_file)
