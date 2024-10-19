@@ -11,6 +11,7 @@ from mininet.link import TCLink, Intf
 from mininet.term import makeTerm   # import makeTerm to allow xterm to run the chat server file using h4 on networks startup
 from subprocess import call
 import subprocess
+import time
 
 subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
 
@@ -91,7 +92,13 @@ def myNetwork():
     info( '*** Post configure switches and hosts\n')
     # *** chat_server.py file needs to be renamed ***
     # start xterm and run chat_server.py file
-    makeTerm(h4, title='Node', term='xterm', display=None, cmd='python3 tpa4_chat_server.py; bash')
+    
+    makeTerm(h4, title='Node: ', term='xterm', display=None, cmd='python3 tpa4_chat_server.py; bash')
+    time.sleep(5)
+    makeTerm(h1, title='Node: ', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
+    makeTerm(h2, title='Node: ', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
+    makeTerm(h3, title='Node: ', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
+
     CLI(net)
     net.stop()
     net.stopXterms()    # close xterm on exit
