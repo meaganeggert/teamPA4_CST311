@@ -22,14 +22,18 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+# grab the common name to be used for the address and tsl
 common_name_file = open('common_name.txt', 'r')
 common_name = common_name_file.read().strip()
 common_name_file.close()
 
 # Set global variables
-client_cert_file = "/etc/ssl/demoCA/cacert.pem"
 server_name = common_name
 server_port = 12000
+
+# set client certificate using this location
+client_cert_file = "/etc/ssl/demoCA/cacert.pem"
+# set ssl context to TLS client using the client certificate
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 context.load_verify_locations(client_cert_file)
 
@@ -39,6 +43,7 @@ outputs = []
 def main():
     # Create socket
     client_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
+    # wrap the socket with the ssl socket
     s_sock = context.wrap_socket(sock=client_socket, server_hostname=server_name)
     
 
@@ -65,21 +70,24 @@ def main():
     welcome_message = data.decode()
     print(welcome_message)
 
-    # Brandon - message outside while loop to allow for break on "bye",
+    # Brandon - message instantiated outside while loop to allow for break on "bye",
     # otherwise we break on for loop, then restart due to while loop
     message = ""
     while True:
+        # if the last message was bye, then stop sending/listening messages
         if message.lower() == "bye":
             break
         try:
             input_ready, output_ready, err = select.select([sys.stdin, s_sock], [s_sock], [])
-    
+
             for i in input_ready:
+                # listen for and print incoming messages from the server
                 if i == s_sock:
                     data = s_sock.recv(1024)
                     message = data.decode()
                     print(message)
 
+                # send message to server
                 elif i == sys.stdin:
                     message = input()
                     try:

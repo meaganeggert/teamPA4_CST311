@@ -27,21 +27,19 @@ common_name_file = open('common_name.txt', 'r')
 common_name = common_name_file.read().strip()
 common_name_file.close()
 
-# to be changed when moved to /etc/ssl/demoCA/private
-# and /etc/ssl/demoCA/newcerts
-ssl_key_file = "/home/mininet/" + common_name + "-key.pem"
-ssl_cert_file = "/home/mininet/" + common_name + "-cert.pem"
+# find the server's key and certificate from the working directory
+ssl_key_file = "./" + common_name + "-key.pem"
+ssl_cert_file = "./" + common_name + "-cert.pem"
+# client certificate is already in the following directory
 client_cert_file = "/etc/ssl/demoCA/cacert.pem"
 # password = "CST311"
 
 server_name = '10.0.2.2'
 server_port = 12000
+
+# set ssl context to TLS server using the server's key and certificate
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain(ssl_cert_file, ssl_key_file)
-# context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-# context.verify_mode = ssl.CERT_REQUIRED
-# context.load_cert_chain(certfile=ssl_cert_file, keyfile=ssl_key_file)
-# context.load_verify_locations(cafile=client_cert_file)
 
 client_used = {}
 connected_clients = {}
@@ -52,6 +50,7 @@ outputs = []
 
 def connection_handler(connection_socket, address):
 
+    # send the welcoming message to the client
     message = "You are connected to the server. "
     if connection_socket == connected_clients["Client X"]:
         message += "Welcome, Client X! Type a message and press 'enter' to send."
@@ -212,10 +211,6 @@ def main():
 
       # Meg - Keep track of connected_clients with username:
       # Brandon - updates based on client_used dictionary
-    #   if len(connected_clients) == 0:
-    #       connected_clients["Client X"] = connection_socket
-    #   else:
-    #       connected_clients["Client Y"] = connection_socket
       if client_used.get(0) == False:
         client_used[0] = True
         connected_clients["Client X"] = connection_socket
