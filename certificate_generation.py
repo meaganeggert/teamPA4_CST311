@@ -19,7 +19,9 @@ def generateKey(chat_name, challenge_password):
 
 def generateCSR(chat_name):
     # The passphrase here should be what you set it to in lab6a
-    subprocess.run("sudo openssl req -nodes -new -config /etc/ssl/openssl.cnf -key " + chat_name + "-key.pem -out " + chat_name + ".csr", shell=True)
+    #subprocess.run("sudo openssl req -nodes -new -config /etc/ssl/openssl.cnf -key " + chat_name + "-key.pem -out " + chat_name + ".csr", shell=True)
+    # This will generate the certificate non-interactively
+    subprocess.run("openssl req -nodes -new -config /etc/ssl/openssl.cnf -key " + chat_name + "-key.pem -out " + chat_name + ".csr -subj \"/C=US/ST=California/L=Seaside/O=CST311/CN=" + chat_name + "\"", shell=True)
 
 def generateCert(chat_name):
     subprocess.run("sudo openssl x509 -req -days 365 -in " + chat_name + ".csr -CA /etc/ssl/demoCA/cacert.pem -CAkey /etc/ssl/demoCA/private/cakey.pem -CAcreateserial -out " + chat_name + "-cert.pem", shell=True)
