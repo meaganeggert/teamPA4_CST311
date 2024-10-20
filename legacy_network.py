@@ -13,7 +13,14 @@ from subprocess import call
 import subprocess
 import time
 
-subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
+# subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"]) ---------------> moved to line 74 to make use of ip_addresses.txt
+
+def save_ip_addresses(net):
+    with open("ip_addresses.txt", "w") as file:
+        for host in net.hosts:
+            ip = host.IP()
+            file.write(f"{host.name}: {ip}\n")
+        file.close()
 
 def myNetwork():
 
@@ -61,6 +68,10 @@ def myNetwork():
 
     info( '*** Starting network\n')
     net.build()
+    # save ip addresses and host names to ip_address.txt file
+    save_ip_addresses(net)
+    # run certificate_generation.py after saving ip address to use ip_address.py in appending to etc/hosts.
+    subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
     # ___________________________________________________
     # allow hosts to send packets to its outside networks
     net['h1'].cmd('ip route add 10.0.2.0/24 via 10.0.1.0')

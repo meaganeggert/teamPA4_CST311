@@ -51,17 +51,18 @@ if __name__ == '__main__':
     common_name.write(chat_name + '\n')
     common_name.close()
 
+    # *** Commented out to make use of the funtion "save_ip_address() in the file "legacy_network.py" ***
     # Write the IP addresses with the host to the file
     # If it already exists, it will just overwrite it.
-    ip_address_file = open('ip_addresses.txt', 'w')
-    ip_address_file.write("r5: 10.0.2.0\n" + 
-                          "r4: 192.168.1.1\n" + 
-                          "r3: 10.0.1.0\n" + 
-                          "h1: 10.0.1.1\n" + 
-                          "h2: 10.0.1.2\n" + 
-                          "h3: 10.0.2.1\n" + 
-                          "h4: 10.0.2.2\n")
-    ip_address_file.close()
+    # ip_address_file = open('ip_addresses.txt', 'w')
+    # ip_address_file.write("r5: 10.0.2.0\n" + 
+    #                       "r4: 192.168.1.1\n" + 
+    #                       "r3: 10.0.1.0\n" + 
+    #                       "h1: 10.0.1.1\n" + 
+    #                       "h2: 10.0.1.2\n" + 
+    #                       "h3: 10.0.2.1\n" + 
+    #                       "h4: 10.0.2.2\n")
+    # ip_address_file.close()
 
     challenge_password = input("Enter a challenge password for the server private key: ")
 
